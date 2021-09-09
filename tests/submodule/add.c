@@ -213,6 +213,22 @@ void test_submodule_add__submodule_clone(void)
 	git_index_free(index);
 }
 
+void test_submodule_add__submodule_clone_into_not_existing_subdir(void)
+{
+	git_submodule *sm;
+
+	g_repo = cl_git_sandbox_init("empty_standard_repo");
+
+	/* Create the submodule structure in a non existing path, clone into it and finalize */
+	cl_git_pass(git_submodule_add_setup(&sm, g_repo, cl_fixture("testrepo.git"), "ext/foo/testrepo", true));
+	cl_git_pass(git_submodule_clone(NULL, sm, NULL));
+	cl_git_pass(git_submodule_add_finalize(sm));
+
+	assert_submodule_exists(g_repo, "empty_standard_repo/ext/foo/testrepo");
+
+	git_submodule_free(sm);
+}
+
 void test_submodule_add__submodule_clone_into_nonempty_dir_succeeds(void)
 {
 	git_submodule *sm;
